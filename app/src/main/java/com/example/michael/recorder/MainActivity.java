@@ -1,17 +1,18 @@
 package com.example.michael.recorder;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ToggleButton;
 
 import java.io.File;
 import java.io.IOException;
-
-import static com.example.michael.recorder.R.id.finishBtn;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,12 +20,24 @@ public class MainActivity extends AppCompatActivity {
     //Imported these libraries??
     private MediaPlayer mediaPlayer;
     private MediaRecorder recorder;
+
+    // Tag for logging to terminal (only for debugging purposes)
+    private static final String LOG_TAG = "AudioRecordTest";
+
+    // Must ask for permission at runtime
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private boolean permissionToRecordAccepted = false;
+    private String [] permissions = {Manifest.permission.RECORD_AUDIO};
+
     //storing the output file
     private String OUTPUT_FILE;
 
     // View Items
-    private Button button;
-    private ToggleButton toggleRecord;
+    private Button recordButton;
+    private Button playButton;
+
+    // track if we are currently recording
+    boolean currentlyRecording = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +46,27 @@ public class MainActivity extends AppCompatActivity {
 
         //this audio format is 3rd gen partner project (supposed to be the most common
         //form for audio
-        OUTPUT_FILE = Environment.getExternalStorageDirectory()+"/recorder.mp3";
+        // Record to the external cache directory for visibility
+        OUTPUT_FILE = getExternalCacheDir().getAbsolutePath();
+        OUTPUT_FILE += "/recorder.mp3";
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         // initialize view items
-        button = (Button)findViewById(R.id.startBtn);
-        toggleRecord = (ToggleButton)findViewById(R.id.toggleRecord);
-
-        toggleRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        recordButton = (Button)findViewById(R.id.startBtn);
+        playButton = (Button)findViewById(R.id.playBtn);
 
         // set button onclick listener
-        button.setOnClickListener(new View.OnClickListener() {
+        recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonTapped(v);
+            }
+        });
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buttonTapped(view);
             }
         });
 
@@ -60,57 +76,33 @@ public class MainActivity extends AppCompatActivity {
     //should have impoted view??
     public void buttonTapped(View view){
         //fuck... watch case sencitivity not ID
-        int NumberOfClick = 0;
 
         switch(view.getId()){
-            //I chaned the ID inside of the xml. WTF?
             case R.id.startBtn:
-                ++NumberOfClick;
-                switch (NumberOfClick) {
-                    case 1:
-
-                        button.setText("Click Me !");
-
-                        try {
-                            beginRecording();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    break;
-
-                    case 2:
-                        try {
-                            stopRecording();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    break;
-
-                }
-                break;
-            case R.id.finishBtn:
-                try {
+                if (!currentlyRecording) {
+                    try {
+                        beginRecording();
+                        currentlyRecording = true;
+                        recordButton.setText("Stop recording");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
                     stopRecording();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    currentlyRecording = false;
+                    recordButton.setText("Start recording");
                 }
                 break;
             case R.id.playBtn:
                 try {
                     playRecording();
+                    Log.i(LOG_TAG, "Play button pressed");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
-            case R.id.stopBtn:
-                try {
-                    stopPlayback();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-                }
         }
+    }
 
     private void stopPlayback() {
         if(mediaPlayer !=null)
@@ -119,12 +111,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void playRecording() throws IOException {
         //make sure no media player is  that is already running
-        ditchMediaPlayer();
         mediaPlayer = new MediaPlayer();
         //Have to add a throw declaration
         mediaPlayer.setDataSource(OUTPUT_FILE);
-        mediaPlayer.prepare();
-        mediaPlayer.start();
+        try {
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
     }
 
     //ditchMediaPlayer method
@@ -142,8 +137,10 @@ public class MainActivity extends AppCompatActivity {
     //stop recording method
     private void stopRecording() {
         //If the reocrder is running, stop it
-        if(recorder !=null)
-            recorder.stop();
+        recorder.stop();
+        recorder.release();
+        recorder = null;
+
     }
 
     private void beginRecording() throws IOException {
@@ -166,9 +163,15 @@ public class MainActivity extends AppCompatActivity {
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         recorder.setOutputFile(OUTPUT_FILE);
         //Add exception to throwback.
-        recorder.prepare();
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+        }
+
         recorder.start();
     }
+
     //method for ditching the media recorder
     private void ditchMediaRecorder() {
         //If the recorder is already create, release it
@@ -176,5 +179,19 @@ public class MainActivity extends AppCompatActivity {
         if(recorder !=null)
             recorder.release();
     }
+
+    // Request permission to record audio at runtime
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_RECORD_AUDIO_PERMISSION:
+                permissionToRecordAccepted  = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                break;
+        }
+        if (!permissionToRecordAccepted ) finish();
+
+    }
+
 }
 
