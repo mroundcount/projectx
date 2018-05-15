@@ -5,6 +5,7 @@
     <uses-sdk android:minSdkVersion="10" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -14,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
+
+        </activity>
+
+        <activity android:name=".LoginActivity"
+            android:label="Sign in"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
