@@ -15,6 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -61,6 +65,8 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+
+
 
 
     }

@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -17,11 +18,30 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3Client;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
+
+import static android.content.ContentValues.TAG;
 
 public class RecordFragment extends Fragment {
 
@@ -29,6 +49,7 @@ public class RecordFragment extends Fragment {
     //Imported these libraries??
     private MediaPlayer mediaPlayer;
     private MediaRecorder recorder;
+    private File outFile;
 
     // Tag for logging to terminal (only for debugging purposes)
     private static final String LOG_TAG = "AudioRecordTest";
@@ -47,6 +68,8 @@ public class RecordFragment extends Fragment {
     private Button playButton;
     private Button stopButton;
     private ImageView swipeArrow;
+    private EditText titleEdit;
+    private EditText descriptionEdit;
 
     // track if we are currently recording
     boolean currentlyRecording = false;
@@ -60,6 +83,9 @@ public class RecordFragment extends Fragment {
 
     // shared preferences
     private SharedPreferences sharedPreferences;
+    private String jwt;
+    private int postID;
+    private int postStatus;
 
     public RecordFragment() {
         // Required empty public constructor
@@ -70,6 +96,13 @@ public class RecordFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AWSMobileClient.getInstance().initialize(getActivity(), new AWSStartupHandler() {
+            @Override
+            public void onComplete(AWSStartupResult awsStartupResult) {
+                Log.d("YourMainActivity", "AWSMobileClient is instantiated and you are connected to AWS!");
+            }
+        }).execute();
 
     }
 
@@ -89,12 +122,16 @@ public class RecordFragment extends Fragment {
         // shared pref
         sharedPreferences = myFragmentView.getContext().getSharedPreferences(
                 "SharedPreferences", Context.MODE_PRIVATE);
+        // get web token from shared pref
+        jwt = sharedPreferences.getString("jwt", "jwt");
 
         // initialize view items
         recordButton = myFragmentView.findViewById(R.id.startBtn);
         playButton = myFragmentView.findViewById(R.id.playBtn);
         stopButton = myFragmentView.findViewById(R.id.stopBtn);
         swipeArrow = myFragmentView.findViewById(R.id.swipeArrow);
+        titleEdit = myFragmentView.findViewById(R.id.titleEdit);
+        descriptionEdit = myFragmentView.findViewById(R.id.description);
 
         // set button onclick listener
         recordButton.setOnClickListener(new View.OnClickListener() {
@@ -118,12 +155,80 @@ public class RecordFragment extends Fragment {
 
         // set swipe arrow listener
         swipeArrow.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
-            public void onSwipeTop() {
-                Toast.makeText(getActivity(), "YOU JUST PUBLISHED IT", Toast.LENGTH_SHORT).show();
+            public void onSwipeTop(){
+                new MyTask().execute();
             }
         });
 
         return myFragmentView;
+    }
+
+    private class MyTask extends AsyncTask<Void, Integer, String> {
+
+        // Runs in UI before background thread is called
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // show loading panel
+        }
+
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(Void... params) {
+            HttpRequest httpRequest = new HttpRequest(getContext().getString(R.string.website_url));
+
+            try {
+                fireOffHTTPRequest(httpRequest);
+            } catch (IOException e){
+                Log.e("Error", e.getMessage());
+            }
+
+            return "result";
+        }
+
+        // This is called from background thread but runs in UI
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+
+            // Do things like update the progress bar
+        }
+
+        // This runs in UI when background thread finishes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+
+            Toast.makeText(getActivity(), "YOU JUST PUBLISHED IT", Toast.LENGTH_SHORT).show();
+
+
+            uploadWithTransferUtility();
+
+        }
+    }
+
+    private void fireOffHTTPRequest(HttpRequest httpRequest) throws IOException{
+
+        try {
+            String response = httpRequest.dataPost("api/post", jwt,
+                    createJSON("3", titleEdit.getText().toString(), descriptionEdit.getText().toString()));
+            Log.i("RESPONSE", response);
+
+            JSONObject jsonObject = new JSONObject(response);
+
+            String string = jsonObject.getString("status");
+            Log.i(TAG, "status (201 is a success response): " + string);
+            postStatus = Integer.valueOf(string);
+
+            String string2 = jsonObject.getString("postID");
+            Log.i(TAG, "status (201 is a success response): " + string2);
+            postID = Integer.valueOf(string2);
+
+        } catch (JSONException e){
+            Log.e("ERROR", e.getMessage());
+        }
+
     }
 
     //button clicking method
@@ -245,7 +350,7 @@ public class RecordFragment extends Fragment {
         countDownTimer.start();
 
         //reference the output file for recoding storage
-        File outFile = new File(OUTPUT_FILE);
+        outFile = new File(OUTPUT_FILE);
 
         //if there is a file already recordered, destroy it and overrite it.
         if(outFile.exists())
@@ -358,6 +463,86 @@ public class RecordFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void uploadWithTransferUtility() {
+
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getActivity(),
+                "us-east-1:f15853d2-bfd1-42b6-b0f0-25e2bb49a81b", // Identity pool ID
+                Regions.US_EAST_1 // Region
+        );
+
+
+        TransferUtility transferUtility =
+                TransferUtility.builder()
+                        .context(getActivity())
+                        .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+                        .s3Client(new AmazonS3Client(credentialsProvider))
+                        .build();
+
+        TransferObserver uploadObserver =
+                transferUtility.upload(
+                        "s3Folder/" + postID + ".mp3",
+                        outFile);
+
+        // Attach a listener to the observer to get state update and progress notifications
+        uploadObserver.setTransferListener(new TransferListener() {
+
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (TransferState.COMPLETED == state) {
+                    // Handle a completed upload.
+
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
+                int percentDone = (int)percentDonef;
+
+                Log.d("YourActivity", "ID:" + id + " bytesCurrent: " + bytesCurrent
+                        + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                // Handle errors
+            }
+
+        });
+
+        // If you prefer to poll for the data, instead of attaching a
+        // listener, check for the state and progress in the observer.
+        if (TransferState.COMPLETED == uploadObserver.getState()) {
+            // Handle a completed upload.
+        }
+
+        Log.d("YourActivity", "Bytes Transferrred: " + uploadObserver.getBytesTransferred());
+        Log.d("YourActivity", "Bytes Total: " + uploadObserver.getBytesTotal());
+    }
+
+
+
+    public JSONObject createJSON(String id, String title, String description) throws JSONException {
+
+        JSONObject postJSON = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject a = new JSONObject();
+
+        a.put("userID", 3);
+        a.put("title", title);
+        a.put("description",description);
+        a.put("timeCreated", Long.toString(Calendar.getInstance().getTimeInMillis()/1000));
+        a.put("likes",0);
+
+        jsonArray.put(a);
+        postJSON.put("Post",jsonArray);
+        Log.i("Json to post", postJSON.toString());
+
+        return postJSON;
     }
 
 }
