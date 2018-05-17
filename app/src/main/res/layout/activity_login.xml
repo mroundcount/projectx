@@ -67,6 +67,7 @@
 
                 <EditText
                     android:id="@+id/email"
+                    android:visibility="invisible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Email address"
@@ -85,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Register"
+                android:text="Sign in"
                 android:textStyle="bold" />
 
         </LinearLayout>

@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
             super.onPostExecute(result);
 
             // save token in shared pref
-            sharedPreferences.edit().putString("token", token).apply();
+            sharedPreferences.edit().putString("jwt", token).apply();
 
             // valid token means validUser
             if(!token.isEmpty()) {

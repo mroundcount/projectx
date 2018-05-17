@@ -6,5 +6,6 @@
     <string name="title_record">Record</string>
     <string name="tag_feed">Feed</string>
     <string name="tag_record">Record</string>
+    <string name="website_url">http://127.0.0.1:8081/</string>
 
 </resources>
