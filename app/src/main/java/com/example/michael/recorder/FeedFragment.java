@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,6 +76,8 @@ public class FeedFragment extends Fragment {
             }
         });
 
+        getPosts();
+
         return myFragmentView;
     }
 
@@ -84,6 +87,18 @@ public class FeedFragment extends Fragment {
         super.onAttach(context);
 
     }
+
+    public void getPosts(){
+
+        DatabaseManager databaseManager = new DatabaseManager();
+        try {
+           Log.i("Posts", databaseManager.getPosts(jwt)) ;
+        } catch (IOException e){
+            Log.e("Error", e.getMessage());
+        }
+
+    }
+
 
     public void buttonClicked() throws IOException{
 

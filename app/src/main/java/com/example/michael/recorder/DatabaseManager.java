@@ -64,13 +64,10 @@ public class DatabaseManager {
         return token;
     }
 
-    /*
-        gets the whole Patient object
-     */
-    public String getPatient(String jwt) throws IOException{
+    public String getPosts(String jwt) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
-        String response = httpRequest.getData("api/patient", jwt);
+        String response = httpRequest.getData("api/allPosts", jwt);
 
         return response;
     }
