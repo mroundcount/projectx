@@ -3,6 +3,7 @@ package com.example.michael.recorder;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -12,13 +13,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
+
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+import com.amazonaws.regions.Regions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+import static android.content.ContentValues.TAG;
 
 public class FeedFragment extends Fragment {
 
@@ -27,24 +40,42 @@ public class FeedFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-
     //View items
     private View myFragmentView;
-    private EditText titleEditText;
-    private EditText descriptionEditText;
-    private Button postButton;
+    private ListView listView;
 
     // classes
     private SharedPreferences sharedPreferences;
+    DatabaseManager databaseManager = new DatabaseManager();
 
     // variables
     private String jwt;
     private String objectForPosting;
+    private String posts;
+    private JSONObject postsObject;
+    private JSONArray postsArray;
+    private JSONObject currentObj;
+    private List<Item> items = new ArrayList<Item>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        AWSMobileClient.getInstance().initialize(getActivity(), new AWSStartupHandler() {
+            @Override
+            public void onComplete(AWSStartupResult awsStartupResult) {
+                Log.d("YourMainActivity", "AWSMobileClient is instantiated and you are connected to AWS!");
+            }
+        }).execute();
+
+
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getActivity(),
+                "us-east-1:f15853d2-bfd1-42b6-b0f0-25e2bb49a81b", // Identity pool ID
+                Regions.US_EAST_1 // Region
+        );
 
     }
 
@@ -60,21 +91,7 @@ public class FeedFragment extends Fragment {
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
 
-        descriptionEditText = myFragmentView.findViewById(R.id.descriptionEditText);
-        titleEditText = myFragmentView.findViewById(R.id.titleEditText);
-        postButton = myFragmentView.findViewById(R.id.postButton);
-
-        // set button click listener
-        postButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    buttonClicked();
-                } catch (IOException e){
-                    Log.e("ERROR", e.getMessage());
-                }
-            }
-        });
+        listView = myFragmentView.findViewById(R.id.listView);
 
         getPosts();
 
@@ -90,48 +107,70 @@ public class FeedFragment extends Fragment {
 
     public void getPosts(){
 
-        DatabaseManager databaseManager = new DatabaseManager();
-        try {
-           Log.i("Posts", databaseManager.getPosts(jwt)) ;
-        } catch (IOException e){
-            Log.e("Error", e.getMessage());
-        }
+        new MyTask().execute();
 
     }
 
+    private class MyTask extends AsyncTask<Void, Void, String> {
 
-    public void buttonClicked() throws IOException{
+        private String databaseResult;
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(Void... params) {
 
-        HttpRequest httpRequest = new HttpRequest(getContext().getString(R.string.website_url));
+            try {
+                posts = databaseManager.getPosts(jwt);
+                Log.i("Posts", databaseManager.getPosts(jwt)) ;
+            } catch (IOException e){
+                Log.e("Error", e.getMessage());
+            }
 
-
-        try {
-            String response = httpRequest.dataPost("api/post", jwt,
-                    createJSON("3", titleEditText.getText().toString(), descriptionEditText.getText().toString()));
-            Log.i("RESPONSE", response);
-        } catch (JSONException e){
-            Log.e("ERROR", e.getMessage());
+            return posts;
         }
-    }
+        // This runs in UI when background thread finishes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
 
+            try {
+                postsArray = new JSONArray(posts);
+            } catch (JSONException e){
+                Log.e("Error", e.getMessage());
+            }
 
-    public JSONObject createJSON(String id, String title, String description) throws JSONException{
+            // Do things like hide the progress bar or update ListView
+            for(int i=0; i< postsArray.length(); i++){
 
-        JSONObject postJSON = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        JSONObject a = new JSONObject();
+                try {
+                    currentObj = postsArray.getJSONObject(i);
+                } catch (JSONException e){
+                    Log.e("Error", e.getMessage());
+                }
 
-        a.put("userID", 3);
-        a.put("title", title);
-        a.put("description",description);
-        a.put("timeCreated", Long.toString(Calendar.getInstance().getTimeInMillis()/1000));
-        a.put("likes",0);
+                Log.i("Current obj", currentObj.toString());
 
-        jsonArray.put(a);
-        postJSON.put("Post",jsonArray);
-        Log.i("Json to post", postJSON.toString());
+                try {
+                    items.add(
+                            new ListItem(currentObj.getString("title"),
+                                    currentObj.getString("description"),
+                                    currentObj.getInt("time_created"),
+                                    currentObj.getInt("post_i_d"), getContext(), getActivity())
+                    );
+                } catch (JSONException e){
+                    Log.e("Error", e.getMessage());
+                }
+            }
 
-        return postJSON;
+            // make newest exercise the first item in listview
+            Collections.reverse(items);
+
+            // set Adapter and set click listener
+            TwoTextArrayAdapter adapter =
+                    new TwoTextArrayAdapter(getActivity(), items);
+            listView.setAdapter(adapter);
+
+        }
+
     }
 
 
