@@ -1,11 +1,14 @@
 <resources>
-    <string name="app_name">Recorder</string>
+    <string name="app_name">Totem</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_feed">Feed</string>
     <string name="title_record">Record</string>
     <string name="tag_feed">Feed</string>
     <string name="tag_record">Record</string>
-    <string name="website_url">http://127.0.0.1:8081/</string>
+    <!--<string name="website_url">http://127.0.0.1:8081/</string>-->
+    <string name="website_url">http://totem-env.qqkpcqqjfi.us-east-1.elasticbeanstalk.com/</string>
+
+
 
 </resources>
