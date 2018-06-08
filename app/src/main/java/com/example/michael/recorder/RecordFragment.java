@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.os.Vibrator;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -86,6 +87,9 @@ public class RecordFragment extends Fragment {
     private String jwt;
     private int postID;
     private int postStatus;
+
+    //Good vibrations
+    private Vibrator mVibrator;
 
     public RecordFragment() {
         // Required empty public constructor
@@ -308,6 +312,10 @@ public class RecordFragment extends Fragment {
     //stop recording method
     private void stopRecording() {
         //If the reocrder is running, stop it
+
+        //Good vibrations
+        //mVibrator.vibrate(5000);
+
         currentlyRecording = false;
         countDownTimer.cancel();
         if(resumedCountDownTimer != null) {
@@ -348,6 +356,9 @@ public class RecordFragment extends Fragment {
         // start timer, get time first
         setCountDownTimer();
         countDownTimer.start();
+
+        //Good vibrations
+        //mVibrator.vibrate(5000);
 
         //reference the output file for recoding storage
         outFile = new File(OUTPUT_FILE);

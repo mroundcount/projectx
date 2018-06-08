@@ -2,11 +2,33 @@
 <resources>
 
 
+    <!--Title bars -->
+    <color name="colorPrimary">#A9A9A9</color>
+    <color name="colorPrimaryLight">#F5F5F5</color>
+    <color name="colorPrimaryDark">#A9A9A9</color>
+    <color name="colorAccent">#505050</color>
+    <color name="colorAccentDark">#808080</color>
+
+
+    <!--
+    Changes:
+    <color name="colorPrimary">#F4F4F4</color>
+    <color name="colorPrimaryLight">#F5F5F5</color>
+    <color name="colorPrimaryDark">#A9A9A9</color>
+    <color name="colorAccent">#D3D3D3</color>
+    <color name="colorAccentDark">#686868</color>
+
+
+
+    original:
     <color name="colorPrimary">#9d0000</color>
     <color name="colorPrimaryLight">#d79500</color>
     <color name="colorPrimaryDark">#ef3345</color>
     <color name="colorAccent">#00a89d</color>
     <color name="colorAccentDark">#000000</color>
 
+
+    https://www.w3schools.com/colors/colors_shades.asp
+-->
 
 </resources>
