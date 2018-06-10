@@ -90,6 +90,14 @@
                 android:text="Sign in"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/create_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Create Account"
+                android:textStyle="bold" />
+
         </LinearLayout>
     </ScrollView>
 
@@ -107,4 +115,5 @@
             android:minWidth="75dp"
             android:indeterminate="true" />
     </RelativeLayout>
+
 </LinearLayout>
