@@ -11,6 +11,11 @@
     android:paddingTop="25dp"
     tools:context=".LoginActivity">
 
+    <RelativeLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -115,5 +120,7 @@
             android:minWidth="75dp"
             android:indeterminate="true" />
     </RelativeLayout>
+
+
 
 </LinearLayout>

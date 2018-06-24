@@ -70,9 +70,17 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         emailEditText = findViewById(R.id.email);
         registerButton = findViewById(R.id.register_button);
+
         //roundcount add
         createButton = findViewById(R.id.create_button);
 
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // any code you write below will execute when user taps the "createButton"
+
+            }
+        });
 
         sharedPreferences = this.getSharedPreferences(
                 "SharedPreferences", Context.MODE_PRIVATE);
@@ -100,30 +108,17 @@ public class LoginActivity extends AppCompatActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mListener.changeFragment(2);
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragment_container, fragment, FRAGMENT_TAG);
+                ft.addToBackStack(null);
+                ft.commit();
             }
         });
         return view;
     }
 
 
-    //@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    //@Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-
-    }
 
     //end roundcount add
 
