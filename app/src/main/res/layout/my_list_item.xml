@@ -17,19 +17,10 @@
             android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/titleText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="25sp"/>
-
-    <TextView
         android:id="@+id/descriptionText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/titleText"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
@@ -37,13 +28,24 @@
 
     <TextView
         android:id="@+id/timeCreatedText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/descriptionText"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
         android:textSize="17sp"/>
+
+            <TextView
+                android:id="@+id/usernameOfPoster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/descriptionText"
+                app:layout_constraintLeft_toRightOf="@+id/timeCreatedText"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:textSize="17sp"/>
 
     <ImageButton
         android:id="@+id/playButton"

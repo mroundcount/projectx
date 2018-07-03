@@ -33,10 +33,10 @@ import java.util.Date;
 public class ListItem implements Item {
 
     private static final String TAG = "ListItem";
-    private final String title;
     private final String description;
     private final int timeCreated;
     private final int postID;
+    private final String username;
     private final Context context;
     private final Activity activity;
     //storing the output file
@@ -44,10 +44,10 @@ public class ListItem implements Item {
     private MediaPlayer mediaPlayer;
 
 
-    public ListItem(String title, String description, int timeCreated, int postID, Context context, Activity activity) {
-        this.title = title;
+    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity) {
         this.description = description;
         this.timeCreated = timeCreated;
+        this.username = username;
         this.postID = postID;
         this.context = context;
         this.activity = activity;
@@ -73,10 +73,10 @@ public class ListItem implements Item {
             view = convertView;
         }
 
-        TextView titleText = view.findViewById(R.id.titleText);
         TextView descriptionText = view.findViewById(R.id.descriptionText);
         TextView timeCreatedText = view.findViewById(R.id.timeCreatedText);
         ImageButton playButton = view.findViewById(R.id.playButton);
+        TextView usernameText = view.findViewById(R.id.usernameOfPoster);
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,9 +90,8 @@ public class ListItem implements Item {
             }
         });
 
-
-        titleText.setText(title);
         descriptionText.setText(description);
+        usernameText.setText("By: " + username);
         try {
             timeCreatedText.setText(getDates(timeCreated));
         } catch (ParseException e){

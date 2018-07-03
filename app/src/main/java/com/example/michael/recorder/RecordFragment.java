@@ -69,7 +69,6 @@ public class RecordFragment extends Fragment {
     private Button playButton;
     private Button stopButton;
     private ImageView swipeArrow;
-    private EditText titleEdit;
     private EditText descriptionEdit;
 
     // track if we are currently recording
@@ -87,6 +86,7 @@ public class RecordFragment extends Fragment {
     private String jwt;
     private int postID;
     private int postStatus;
+    private String username;
 
     //Good vibrations
     private Vibrator mVibrator;
@@ -128,13 +128,15 @@ public class RecordFragment extends Fragment {
                 "SharedPreferences", Context.MODE_PRIVATE);
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
+        username = sharedPreferences.getString("username", "user");
+
+        getActivity().setTitle(username);
 
         // initialize view items
         recordButton = myFragmentView.findViewById(R.id.startBtn);
         playButton = myFragmentView.findViewById(R.id.playBtn);
         stopButton = myFragmentView.findViewById(R.id.stopBtn);
         swipeArrow = myFragmentView.findViewById(R.id.swipeArrow);
-        titleEdit = myFragmentView.findViewById(R.id.titleEdit);
         descriptionEdit = myFragmentView.findViewById(R.id.description);
 
         // set button onclick listener
@@ -216,7 +218,7 @@ public class RecordFragment extends Fragment {
 
         try {
             String response = httpRequest.dataPost("api/post", jwt,
-                    createJSON("3", titleEdit.getText().toString(), descriptionEdit.getText().toString()));
+                    createJSON("3", descriptionEdit.getText().toString()));
             Log.i("RESPONSE", response);
 
             JSONObject jsonObject = new JSONObject(response);
@@ -537,14 +539,13 @@ public class RecordFragment extends Fragment {
 
 
 
-    public JSONObject createJSON(String id, String title, String description) throws JSONException {
+    public JSONObject createJSON(String id, String description) throws JSONException {
 
         JSONObject postJSON = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         JSONObject a = new JSONObject();
 
         a.put("userID", 3);
-        a.put("title", title);
         a.put("description",description);
         a.put("timeCreated", Long.toString(Calendar.getInstance().getTimeInMillis()/1000));
         a.put("likes",0);

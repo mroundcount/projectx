@@ -85,7 +85,7 @@ public class ProfileFragment extends Fragment {
         jwt = sharedPreferences.getString("jwt", "jwt");
         username = sharedPreferences.getString("username", "user");
 
-        getActivity().setTitle(username);
+        getActivity().setTitle(username +"'s profile");
 
         listView = myFragmentView.findViewById(R.id.postsList);
 
@@ -147,10 +147,11 @@ public class ProfileFragment extends Fragment {
 
                 try {
                     items.add(
-                            new ListItem(currentObj.getString("title"),
+                            new ListItem(
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
-                                    currentObj.getInt("post_i_d"), getContext(), getActivity())
+                                    currentObj.getInt("post_i_d"),
+                                    currentObj.getString("username"), getContext(), getActivity())
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());

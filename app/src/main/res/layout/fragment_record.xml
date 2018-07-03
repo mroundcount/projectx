@@ -54,21 +54,12 @@
         app:layout_constraintTop_toBottomOf="@id/mainText"
         tools:layout_editor_absoluteY="197dp" />
 
-
-    <EditText
-        android:id="@+id/titleEdit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
-        android:hint="Enter title"
-        app:layout_constraintTop_toBottomOf="@+id/playBtn" />
-
     <EditText
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter description"
-        app:layout_constraintTop_toBottomOf="@+id/titleEdit" />
+        app:layout_constraintTop_toBottomOf="@+id/playBtn" />
 
     <TextView
         android:layout_width="match_parent"
