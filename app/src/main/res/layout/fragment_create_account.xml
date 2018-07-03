@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="25dp"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp"
+    android:paddingTop="25dp"
+    tools:context=".CreateAccount">
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/email_login_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/createUsernameTxt"
+                android:layout_width="308dp"
+                android:layout_height="52dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Username"
+                tools:layout_editor_absoluteX="38dp"
+                tools:layout_editor_absoluteY="33dp" />
+
+            <EditText
+                android:id="@+id/createPasswordTxt"
+                android:layout_width="308dp"
+                android:layout_height="52dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Password"
+                tools:layout_editor_absoluteX="38dp"
+                tools:layout_editor_absoluteY="97dp" />
+
+            <EditText
+                android:id="@+id/repeatPasswordTxt"
+                android:layout_width="308dp"
+                android:layout_height="52dp"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Repeat Password"
+                tools:layout_editor_absoluteX="38dp"
+                tools:layout_editor_absoluteY="161dp" />
+
+            <EditText
+                android:id="@+id/createEmailTxt"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Email Address"
+                tools:layout_editor_absoluteX="38dp"
+                tools:layout_editor_absoluteY="223dp" />
+
+            <Button
+                android:id="@+id/createAccountBtn"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Create Account"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|center"
+        android:paddingTop="115dp">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:minHeight="75dp"
+            android:minWidth="75dp" />
+    </RelativeLayout>
+
+</LinearLayout>

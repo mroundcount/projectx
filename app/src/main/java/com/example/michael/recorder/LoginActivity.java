@@ -15,6 +15,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+//roundcount add
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
@@ -22,12 +30,21 @@ import com.amazonaws.mobile.client.AWSStartupResult;
 
 public class LoginActivity extends AppCompatActivity {
 
+    //roundcount add
+    public interface OnFragmentInteractionListener {
+        public void changeFragment(int id);
+    }
+    private OnFragmentInteractionListener mListener;
+    //end roundcount add
+
 
     // view items
     private EditText userNameEditText;
     private EditText passwordEditText;
     private EditText emailEditText;
     private Button registerButton;
+    //roundcount add
+    private Button createButton;
 
     // Classes
     private SharedPreferences sharedPreferences;
@@ -54,6 +71,17 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         registerButton = findViewById(R.id.register_button);
 
+        //roundcount add
+        createButton = findViewById(R.id.create_button);
+
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // any code you write below will execute when user taps the "createButton"
+
+            }
+        });
+
         sharedPreferences = this.getSharedPreferences(
                 "SharedPreferences", Context.MODE_PRIVATE);
 
@@ -70,6 +98,30 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+    //roundcount add
+    //@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_create_account, container, false);
+        Button btn = (Button) view.findViewById(R.id.create_button);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.fragment_container, fragment, FRAGMENT_TAG);
+                ft.addToBackStack(null);
+                ft.commit();
+            }
+        });
+        return view;
+    }
+
+
+
+    //end roundcount add
+
 
 
     @Override
