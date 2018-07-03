@@ -137,6 +137,7 @@ public class LoginFragment extends Fragment {
 
             // save token in shared pref
             sharedPreferences.edit().putString("jwt", token).apply();
+            sharedPreferences.edit().putString("username", user).apply();
 
             // valid token means validUser
             if(!token.isEmpty()) {

@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new RecordFragment();
                     FRAGMENT_TAG = getString(R.string.tag_record);
                     break;
+                case R.id.navigation_profile:
+                    fragment = new ProfileFragment();
+                    FRAGMENT_TAG = getString(R.string.tag_profile);
+                    break;
             }
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_container, fragment, FRAGMENT_TAG);

@@ -2,18 +2,13 @@ package com.example.michael.recorder;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -28,16 +23,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
+public class ProfileFragment extends Fragment {
 
-public class FeedFragment extends Fragment {
-
-
-    public FeedFragment() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
@@ -85,7 +76,7 @@ public class FeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myFragmentView = inflater.inflate(R.layout.fragment_feed, container, false);
+        myFragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         sharedPreferences = getActivity().getSharedPreferences(
                 "SharedPreferences", Context.MODE_PRIVATE);
@@ -96,9 +87,9 @@ public class FeedFragment extends Fragment {
 
         getActivity().setTitle(username);
 
-        listView = myFragmentView.findViewById(R.id.listView);
+        listView = myFragmentView.findViewById(R.id.postsList);
 
-        getPosts();
+        //getPosts();
 
         return myFragmentView;
     }
