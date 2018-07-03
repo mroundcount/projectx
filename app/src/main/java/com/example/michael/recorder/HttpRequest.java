@@ -113,6 +113,44 @@ public class HttpRequest {
         return stringBuilder.toString();
     }
 
+    // makes data post request
+    public String registerPost(String endpoint, JSONObject data) throws IOException {
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        URL url = new URL(this.baseURl + endpoint);
+        urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("Content", "data");
+        urlConnection.getOutputStream().write(data.toString().getBytes());
+        urlConnection.connect();
+
+        int responseCode = urlConnection.getResponseCode();
+        BufferedReader reader;
+        InputStream inputStream;
+        if (200 <= responseCode && responseCode <= 299) {
+            // read the input stream into a string called "line"
+            inputStream = urlConnection.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+        } else {
+            inputStream = urlConnection.getErrorStream();
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        while ((line = reader.readLine())  != null) {
+            Log.i("LINE", line);
+
+            // since JSON, newline is not necessary. it does make debugging a lot easier
+            // if you print out the whole builder
+            stringBuilder.append(line + "\n");
+        }
+
+        return stringBuilder.toString();
+    }
+
     public String getData(String endpoint, String token) throws IOException {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();

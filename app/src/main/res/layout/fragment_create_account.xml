@@ -9,7 +9,7 @@
     android:paddingLeft="25dp"
     android:paddingRight="25dp"
     android:paddingTop="25dp"
-    tools:context=".CreateAccount">
+    tools:context=".CreateAccountFragment">
 
     <ScrollView
         android:id="@+id/login_form"
@@ -28,7 +28,7 @@
                 android:layout_height="52dp"
                 android:ems="10"
                 android:inputType="textPersonName"
-                android:text="Username"
+                android:hint="Username"
                 tools:layout_editor_absoluteX="38dp"
                 tools:layout_editor_absoluteY="33dp" />
 
@@ -37,8 +37,8 @@
                 android:layout_width="308dp"
                 android:layout_height="52dp"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Password"
+                android:inputType="textPassword"
+                android:hint="Password"
                 tools:layout_editor_absoluteX="38dp"
                 tools:layout_editor_absoluteY="97dp" />
 
@@ -47,8 +47,8 @@
                 android:layout_width="308dp"
                 android:layout_height="52dp"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Repeat Password"
+                android:inputType="textPassword"
+                android:hint="Repeat Password"
                 tools:layout_editor_absoluteX="38dp"
                 tools:layout_editor_absoluteY="161dp" />
 
@@ -57,8 +57,8 @@
                 android:layout_width="310dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="Email Address"
+                android:inputType="textEmailAddress"
+                android:hint="Email Address"
                 tools:layout_editor_absoluteX="38dp"
                 tools:layout_editor_absoluteY="223dp" />
 
@@ -68,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Create Account"
+                android:hint="Create Account"
                 android:textStyle="bold" />
 
 
