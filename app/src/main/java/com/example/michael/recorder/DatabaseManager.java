@@ -70,7 +70,7 @@ public class DatabaseManager {
     public String getPosts(String jwt) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
-        String response = httpRequest.getData("api/allPosts", jwt);
+        String response = httpRequest.getData("api/getPostsForFollowers", jwt);
 
         return response;
     }

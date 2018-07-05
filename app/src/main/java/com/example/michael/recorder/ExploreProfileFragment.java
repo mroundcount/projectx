@@ -56,6 +56,8 @@ public class ExploreProfileFragment extends Fragment {
     private JSONObject currentObj;
     private List<Item> items = new ArrayList<Item>();
     private String response;
+    private Integer id;
+    private Integer loggedInUserID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class ExploreProfileFragment extends Fragment {
 
         Bundle arguments = getArguments();
         username = arguments.getString("username");
+        id = arguments.getInt("ID");
 
     }
 
@@ -93,6 +96,7 @@ public class ExploreProfileFragment extends Fragment {
 
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
+        loggedInUserID = sharedPreferences.getInt("userID", 0);
 
         getActivity().setTitle(username +"'s profile");
 
@@ -210,8 +214,10 @@ public class ExploreProfileFragment extends Fragment {
     private void fireOffFollowRequest(HttpRequest httpRequest) throws IOException {
 
         try {
-            posts = httpRequest.dataPost("api/addFollower", jwt, createFollowJSON(1,2));
+            posts = httpRequest.dataPost("api/addFollower", jwt, createFollowJSON(loggedInUserID,id));
             Log.i("RESPONSE", posts);
+
+            followButton.setText("Following!");
 
         } catch (JSONException e) {
             Log.e("ERROR", e.getMessage());

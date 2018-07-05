@@ -125,7 +125,7 @@ public class FeedFragment extends Fragment {
 
             try {
                 posts = databaseManager.getPosts(jwt);
-                Log.i("Posts", databaseManager.getPosts(jwt)) ;
+                Log.i("Posts", posts);
             } catch (IOException e){
                 Log.e("Error", e.getMessage());
             }
@@ -143,27 +143,35 @@ public class FeedFragment extends Fragment {
                 Log.e("Error", e.getMessage());
             }
 
+            Log.i("Post araay length", postsArray.length() + "");
+
             // Do things like hide the progress bar or update ListView
-            for(int i=0; i< postsArray.length(); i++){
+            for(int i=0; i < postsArray.length(); i++){
+                try{
+                    JSONArray jsonArray = postsArray.getJSONArray(i);
+                    for(int x=0; x<jsonArray.length(); x++) {
+                        try {
+                            currentObj = jsonArray.getJSONObject(x);
+                        } catch (JSONException e) {
+                            Log.e("Error", e.getMessage());
+                        }
 
-                try {
-                    currentObj = postsArray.getJSONObject(i);
-                } catch (JSONException e){
-                    Log.e("Error", e.getMessage());
-                }
+                        try {
+                            items.add(
+                                    new ListItem(
+                                            currentObj.getString("description"),
+                                            currentObj.getInt("time_created"),
+                                            currentObj.getInt("post_i_d"),
+                                            currentObj.getString("username"), getContext(), getActivity())
+                            );
+                        } catch (JSONException e){
+                            Log.e("Error", e.getMessage());
+                        }
 
-                Log.i("Current obj", currentObj.toString());
+                    }
 
-                try {
-                    items.add(
-                            new ListItem(
-                                    currentObj.getString("description"),
-                                    currentObj.getInt("time_created"),
-                                    currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity())
-                    );
-                } catch (JSONException e){
-                    Log.e("Error", e.getMessage());
+                } catch (JSONException e) {
+                    Log.e("error", e.getMessage());
                 }
             }
 

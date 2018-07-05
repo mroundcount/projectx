@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private String searchQuery;
     private String response;
     private String searchedUsername = "";
+    private Integer searchedID = 0;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -95,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
         username = sharedPreferences.getString("username", "user");
+
+        searchQuery = username;
+
+        // get ID of current logged in
+        new GetIDTask().execute();
 
         searchView = findViewById(R.id.searchView);
 
@@ -151,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Bundle arguments = new Bundle();
                 arguments.putString( "username" , searchedUsername);
+                arguments.putInt("ID", searchedID);
                 fragment.setArguments(arguments);
 
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -166,6 +173,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private class GetIDTask extends AsyncTask<Void, Void, String> {
+
+        private String databaseResult;
+        // This is run in a background thread
+        @Override
+        protected String doInBackground(Void... params) {
+
+            try {
+                getCurrentUserID(searchQuery, new HttpRequest(getString(R.string.website_url)));
+            } catch (IOException e){
+                Log.e("Error", e.getMessage());
+            }
+
+
+            return "complete";
+        }
+        // This runs in UI when background thread finishes
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            // happens when background thread finishes
+            // take user to profile page of person they just searched
+
+
+        }
+
+    }
+
     private void fireOffHTTPRequest(String query, HttpRequest httpRequest) throws IOException {
 
         try {
@@ -175,7 +210,30 @@ public class MainActivity extends AppCompatActivity {
             JSONObject jsonObject = new JSONObject(response);
 
             searchedUsername = jsonObject.getString("username");
+            searchedID = jsonObject.getInt("user_i_d");
+
             Log.i(TAG, "username" + username);
+
+        } catch (JSONException e) {
+            Log.e("ERROR", e.getMessage());
+        }
+
+    }
+
+    private void getCurrentUserID(String query, HttpRequest httpRequest) throws IOException {
+
+        try {
+            response = httpRequest.dataPost("api/searchUser", jwt, createJSON(query));
+            Log.i("RESPONSE", response);
+
+            JSONObject jsonObject = new JSONObject(response);
+
+            searchedUsername = jsonObject.getString("username");
+            searchedID = jsonObject.getInt("user_i_d");
+            sharedPreferences.edit().putInt("userID", searchedID).apply();
+
+            Log.i(TAG, "username" + username);
+            Log.i(TAG, "id" + searchedID);
 
         } catch (JSONException e) {
             Log.e("ERROR", e.getMessage());
