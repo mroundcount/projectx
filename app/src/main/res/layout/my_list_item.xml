@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_gravity="center"
-        card_view:cardCornerRadius="4dp">
+        card_view:cardCornerRadius="4dp"
+        app:cardUseCompatPadding="true">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -32,8 +33,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/descriptionText"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="25dp"
+        android:padding="10dp"
         android:textSize="17sp"/>
 
             <TextView
@@ -41,10 +43,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/descriptionText"
-                app:layout_constraintLeft_toRightOf="@+id/timeCreatedText"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="10dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:padding="10dp"
                 android:textSize="17sp"/>
 
     <ImageButton
@@ -52,6 +56,8 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:src="@android:drawable/ic_media_play"
+        android:background="@android:color/transparent"
+        android:tint="@color/colorAccentDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
