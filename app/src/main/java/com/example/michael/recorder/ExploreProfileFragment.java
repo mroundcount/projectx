@@ -104,6 +104,11 @@ public class ExploreProfileFragment extends Fragment {
             public void onClick(View view) {
                 Log.i("button", "i want to follow");
 
+                try {
+                    fireOffFollowRequest(new HttpRequest(getString(R.string.website_url)));
+                } catch (IOException e){
+                    Log.e("Error", e.getMessage());
+                }
             }
         });
 
@@ -202,6 +207,17 @@ public class ExploreProfileFragment extends Fragment {
 
     }
 
+    private void fireOffFollowRequest(HttpRequest httpRequest) throws IOException {
+
+        try {
+            posts = httpRequest.dataPost("api/addFollower", jwt, createFollowJSON(1,2));
+            Log.i("RESPONSE", posts);
+
+        } catch (JSONException e) {
+            Log.e("ERROR", e.getMessage());
+        }
+    }
+
     public JSONObject createJSON(String username) throws JSONException {
 
         JSONObject postJSON = new JSONObject();
@@ -212,6 +228,22 @@ public class ExploreProfileFragment extends Fragment {
 
         jsonArray.put(a);
         postJSON.put("Username", jsonArray);
+        Log.i("Json to post", postJSON.toString());
+
+        return postJSON;
+    }
+
+    public JSONObject createFollowJSON(Integer followerID, Integer followingID) throws JSONException {
+
+        JSONObject postJSON = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject a = new JSONObject();
+
+        a.put("followerID", followerID);
+        a.put("followingID", followingID);
+
+        jsonArray.put(a);
+        postJSON.put("Follower", jsonArray);
         Log.i("Json to post", postJSON.toString());
 
         return postJSON;
