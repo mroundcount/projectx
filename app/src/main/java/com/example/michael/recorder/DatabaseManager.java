@@ -75,6 +75,21 @@ public class DatabaseManager {
         return response;
     }
 
+    public String getPostsForUser(String jwt) throws IOException{
+
+        HttpRequest httpRequest = new HttpRequest(website_url);
+        String response = httpRequest.getData("api/postsForUser", jwt);
+
+        return response;
+    }
+
+    public String searchUser(String jwt) throws IOException{
+        HttpRequest httpRequest = new HttpRequest(website_url);
+        String response = httpRequest.getData("api/searchUser", jwt);
+
+        return response;
+    }
+
 }
 
 

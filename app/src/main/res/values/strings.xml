@@ -9,6 +9,7 @@
     <string name="tag_create">Register</string>
     <string name="tag_record">Record</string>
     <string name="tag_profile">Profile</string>
+    <string name="tag_exploreProfile">Explore Profile</string>
     <string name="title_profile">Profile</string>
 
     <string name="website_url">http://127.0.0.1:8081/</string>

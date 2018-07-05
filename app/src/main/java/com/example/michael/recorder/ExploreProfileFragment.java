@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -26,15 +28,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProfileFragment extends Fragment {
+import static android.content.ContentValues.TAG;
 
-    public ProfileFragment() {
+public class ExploreProfileFragment extends Fragment {
+
+    public ExploreProfileFragment() {
         // Required empty public constructor
     }
 
     //View items
     private View myFragmentView;
     private ListView listView;
+    private TextView profileName;
+    private Button followButton;
 
     // classes
     private SharedPreferences sharedPreferences;
@@ -49,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private JSONArray postsArray;
     private JSONObject currentObj;
     private List<Item> items = new ArrayList<Item>();
+    private String response;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,24 +77,37 @@ public class ProfileFragment extends Fragment {
                 Regions.US_EAST_1 // Region
         );
 
+        Bundle arguments = getArguments();
+        username = arguments.getString("username");
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        myFragmentView = inflater.inflate(R.layout.fragment_profile, container, false);
+        myFragmentView = inflater.inflate(R.layout.fragment_explore_profile, container, false);
 
         sharedPreferences = getActivity().getSharedPreferences(
                 "SharedPreferences", Context.MODE_PRIVATE);
 
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
-        username = sharedPreferences.getString("username", "user");
 
-        getActivity().setTitle("My profile");
+        getActivity().setTitle(username +"'s profile");
 
         listView = myFragmentView.findViewById(R.id.postsList);
+        profileName = myFragmentView.findViewById(R.id.profileName);
+        followButton = myFragmentView.findViewById(R.id.followButton);
+        followButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("button", "i want to follow");
+
+            }
+        });
+
+        profileName.setText(username + "'s profile");
 
         getPosts();
 
@@ -106,7 +126,6 @@ public class ProfileFragment extends Fragment {
         new MyTask().execute();
 
     }
-
 
     private class MyTask extends AsyncTask<Void, Void, String> {
 
@@ -204,3 +223,4 @@ public class ProfileFragment extends Fragment {
     }
 
 }
+
