@@ -87,6 +87,7 @@ public class RecordFragment extends Fragment {
     private int postID;
     private int postStatus;
     private String username;
+    private int userID;
 
     //Good vibrations
     private Vibrator mVibrator;
@@ -129,6 +130,7 @@ public class RecordFragment extends Fragment {
         // get web token from shared pref
         jwt = sharedPreferences.getString("jwt", "jwt");
         username = sharedPreferences.getString("username", "user");
+        userID = sharedPreferences.getInt("userID", 0);
 
         getActivity().setTitle(username);
 
@@ -206,7 +208,7 @@ public class RecordFragment extends Fragment {
             super.onPostExecute(result);
 
 
-            Toast.makeText(getActivity(), "YOU JUST PUBLISHED IT", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Published!", Toast.LENGTH_SHORT).show();
 
 
             uploadWithTransferUtility();
@@ -218,7 +220,7 @@ public class RecordFragment extends Fragment {
 
         try {
             String response = httpRequest.dataPost("api/post", jwt,
-                    createJSON("3", descriptionEdit.getText().toString()));
+                    createJSON(username, descriptionEdit.getText().toString(), userID));
             Log.i("RESPONSE", response);
 
             JSONObject jsonObject = new JSONObject(response);
@@ -539,13 +541,13 @@ public class RecordFragment extends Fragment {
 
 
 
-    public JSONObject createJSON(String id, String description) throws JSONException {
+    public JSONObject createJSON(String username, String description, Integer userID) throws JSONException {
 
         JSONObject postJSON = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         JSONObject a = new JSONObject();
 
-        a.put("userID", 3);
+        a.put("username", username);
         a.put("description",description);
         a.put("timeCreated", Long.toString(Calendar.getInstance().getTimeInMillis()/1000));
         a.put("likes",0);
