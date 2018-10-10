@@ -120,7 +120,7 @@ public class RecordFragment extends Fragment {
         //form for audio
         // Record to the external cache directory for visibility
         OUTPUT_FILE = getActivity().getExternalCacheDir().getAbsolutePath();
-        OUTPUT_FILE += "/recorder.mp3";
+        OUTPUT_FILE += "/recorder.m4a";
 
         ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
@@ -376,7 +376,7 @@ public class RecordFragment extends Fragment {
         //We are using the mic to record it. Look at uplink for the future for incomming calls
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         //3rd generation partnership project
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         //Adaptive multiprate narrow bans, we can use Y Band or AA for later version
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         recorder.setOutputFile(OUTPUT_FILE);
@@ -499,7 +499,7 @@ public class RecordFragment extends Fragment {
 
         TransferObserver uploadObserver =
                 transferUtility.upload(
-                        "s3Folder/" + postID + ".mp3",
+                        "s3Folder/" + postID + ".m4a",
                         outFile);
 
         // Attach a listener to the observer to get state update and progress notifications

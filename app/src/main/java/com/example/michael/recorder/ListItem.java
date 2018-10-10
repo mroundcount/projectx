@@ -54,7 +54,7 @@ public class ListItem implements Item {
 
         // Record to the external cache directory for visibility
         OUTPUT_FILE = activity.getExternalCacheDir().getAbsolutePath();
-        OUTPUT_FILE += "/recorder.mp3";
+        OUTPUT_FILE += "/recorder.m4a";
 
 
     }
@@ -122,7 +122,7 @@ public class ListItem implements Item {
 
         TransferObserver downloadObserver =
                 transferUtility.download(
-                        "s3Folder/" + postID + ".mp3",
+                        "s3Folder/" + postID + ".m4a",
                         new File(OUTPUT_FILE));
 
         // Attach a listener to the observer to get state update and progress notifications
