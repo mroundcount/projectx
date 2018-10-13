@@ -1,6 +1,8 @@
 package com.example.michael.recorder;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
@@ -49,6 +52,7 @@ public class ProfileFragment extends Fragment {
     private JSONArray postsArray;
     private JSONObject currentObj;
     private List<Item> items = new ArrayList<Item>();
+    private OnClickDeleteButtonListener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,14 @@ public class ProfileFragment extends Fragment {
                 "us-east-1:f15853d2-bfd1-42b6-b0f0-25e2bb49a81b", // Identity pool ID
                 Regions.US_EAST_1 // Region
         );
+
+        listener = new OnClickDeleteButtonListener() {
+            @Override
+            public void onBtnClick(int position) {
+                Log.i("TIME TO DELETE AND ", "" + position);
+                getPosts();
+            }
+        };
 
     }
 
@@ -91,6 +103,8 @@ public class ProfileFragment extends Fragment {
 
         getPosts();
 
+
+
         return myFragmentView;
     }
 
@@ -103,6 +117,7 @@ public class ProfileFragment extends Fragment {
 
     public void getPosts(){
 
+        items.clear();
         new MyTask().execute();
 
     }
@@ -152,7 +167,7 @@ public class ProfileFragment extends Fragment {
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity())
+                                    currentObj.getString("username"), getContext(), getActivity(), listener)
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());
@@ -202,5 +217,7 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
+
+
 
 }

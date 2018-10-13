@@ -58,6 +58,7 @@ public class ExploreProfileFragment extends Fragment {
     private String response;
     private Integer id;
     private Integer loggedInUserID;
+    private OnClickDeleteButtonListener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +84,12 @@ public class ExploreProfileFragment extends Fragment {
         username = arguments.getString("username");
         id = arguments.getInt("ID");
 
+        listener = new OnClickDeleteButtonListener() {
+            @Override
+            public void onBtnClick(int position) {
+                getPosts();
+            }
+        };
     }
 
     @Override
@@ -180,7 +187,7 @@ public class ExploreProfileFragment extends Fragment {
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity())
+                                    currentObj.getString("username"), getContext(), getActivity(), listener)
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());

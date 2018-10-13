@@ -58,6 +58,7 @@ public class FeedFragment extends Fragment {
     private JSONArray postsArray;
     private JSONObject currentObj;
     private List<Item> items = new ArrayList<Item>();
+    private OnClickDeleteButtonListener listener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,13 @@ public class FeedFragment extends Fragment {
         listView = myFragmentView.findViewById(R.id.listView);
 
         getPosts();
+
+        listener = new OnClickDeleteButtonListener() {
+            @Override
+            public void onBtnClick(int position) {
+                getPosts();
+            }
+        };
 
         return myFragmentView;
     }
@@ -162,7 +170,7 @@ public class FeedFragment extends Fragment {
                                             currentObj.getString("description"),
                                             currentObj.getInt("time_created"),
                                             currentObj.getInt("post_i_d"),
-                                            currentObj.getString("username"), getContext(), getActivity())
+                                            currentObj.getString("username"), getContext(), getActivity(), listener)
                             );
                         } catch (JSONException e){
                             Log.e("Error", e.getMessage());

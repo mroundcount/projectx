@@ -1,15 +1,22 @@
 package com.example.michael.recorder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.Image;
 import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.R.*;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -39,23 +46,26 @@ public class ListItem implements Item {
     private final String username;
     private final Context context;
     private final Activity activity;
+    private ImageButton playButton;
+    private ImageButton deleteButton;
     //storing the output file
     private String OUTPUT_FILE;
     private MediaPlayer mediaPlayer;
+    private OnClickDeleteButtonListener listener;
 
 
-    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity) {
+    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity, OnClickDeleteButtonListener onClickDeleteButtonListener) {
         this.description = description;
         this.timeCreated = timeCreated;
         this.username = username;
         this.postID = postID;
         this.context = context;
         this.activity = activity;
+        this.listener = onClickDeleteButtonListener;
 
         // Record to the external cache directory for visibility
         OUTPUT_FILE = activity.getExternalCacheDir().getAbsolutePath();
         OUTPUT_FILE += "/recorder.m4a";
-
 
     }
 
@@ -75,7 +85,8 @@ public class ListItem implements Item {
 
         TextView descriptionText = view.findViewById(R.id.descriptionText);
         TextView timeCreatedText = view.findViewById(R.id.timeCreatedText);
-        ImageButton playButton = view.findViewById(R.id.playButton);
+        playButton = view.findViewById(R.id.playButton);
+        playButton.setImageResource(R.drawable.play);
         TextView usernameText = view.findViewById(R.id.usernameOfPoster);
 
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +96,22 @@ public class ListItem implements Item {
 
                 Log.i("POST ID", postID + " ");
 
+                playButton.setImageResource(R.drawable.elipses);
+
                 downloadWithTransferUtility();
+
+                playButton.setImageResource(R.drawable.check);
+            }
+        });
+
+        deleteButton = view.findViewById(R.id.deleteButton);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("CLIKCKEJD", "" + postID);
+                // delete
+
+                deletePost();
 
             }
         });
@@ -101,6 +127,24 @@ public class ListItem implements Item {
         return view;
     }
 
+    private void deletePost(){
+        AlertDialog.Builder adb=new AlertDialog.Builder(activity);
+        adb.setTitle("Delete?");
+        adb.setMessage("Are you sure you want to delete this post?");
+        adb.setNegativeButton("Cancel", null);
+        adb.setPositiveButton("Yes", new AlertDialog.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                // run delete post
+
+                Log.i("CLIKCKEJD", "yes");
+
+                if(listener != null)
+                    listener.onBtnClick(postID);
+
+            }});
+        adb.show();
+    }
     /*
     Gets the date of the workout and formats it
     to MM-DD-YYYY format
@@ -178,6 +222,24 @@ public class ListItem implements Item {
         } catch (IOException e) {
             Log.e("ListItemTagLog", "prepare() failed");
         }
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                updateUI();
+            }
+        });
     }
 
+    private void updateUI() {
+        // This can be executed on back thread
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                // do work on UI
+                Log.i("MediaPlayer: ", "done playing post");
+                playButton.setImageResource(R.drawable.check);
+            }
+        });
+    }
 }

@@ -75,6 +75,13 @@ public class DatabaseManager {
         return response;
     }
 
+    public String deletePost(String jwt) throws IOException{
+
+        HttpRequest httpRequest = new HttpRequest(website_url);
+        String response = httpRequest.getData("api/getPostsForFollowers", jwt);
+
+        return response;
+    }
     public String getPostsForUser(String jwt) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
