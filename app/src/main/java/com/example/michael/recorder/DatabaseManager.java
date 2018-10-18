@@ -70,15 +70,15 @@ public class DatabaseManager {
     public String getPosts(String jwt) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
-        String response = httpRequest.getData("api/getPostsForFollowers", jwt);
+        String response = httpRequest.getData("api/allPosts", jwt);
 
         return response;
     }
 
-    public String deletePost(String jwt) throws IOException{
+    public String deletePost(String jwt, JSONObject data) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
-        String response = httpRequest.getData("api/getPostsForFollowers", jwt);
+        String response = httpRequest.dataPost("api/deletePost", jwt, data);
 
         return response;
     }

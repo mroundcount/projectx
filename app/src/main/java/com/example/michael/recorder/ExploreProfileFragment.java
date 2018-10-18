@@ -187,7 +187,7 @@ public class ExploreProfileFragment extends Fragment {
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity(), listener)
+                                    currentObj.getString("username"), getContext(), getActivity(), listener, "explore")
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());

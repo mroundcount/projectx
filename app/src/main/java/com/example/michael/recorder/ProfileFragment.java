@@ -19,6 +19,7 @@ import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.AWSStartupHandler;
 import com.amazonaws.mobile.client.AWSStartupResult;
 import com.amazonaws.regions.Regions;
+import com.google.gson.JsonIOException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,6 +80,22 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onBtnClick(int position) {
                 Log.i("TIME TO DELETE AND ", "" + position);
+
+                JSONObject postJSON = new JSONObject();
+
+                try{
+                    postJSON.put("postID",position);
+                    Log.i("Json to post", postJSON.toString());
+                } catch (JSONException e){
+                    // error
+                }
+
+                try {
+                    databaseManager.deletePost(jwt, postJSON);
+                } catch (IOException e){
+
+                }
+
                 getPosts();
             }
         };
@@ -167,7 +185,8 @@ public class ProfileFragment extends Fragment {
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity(), listener)
+                                    currentObj.getString("username"), getContext(), getActivity(), listener, "profile")
+
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());

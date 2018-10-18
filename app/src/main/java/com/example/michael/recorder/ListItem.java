@@ -46,6 +46,7 @@ public class ListItem implements Item {
     private final String username;
     private final Context context;
     private final Activity activity;
+    private final String frag;
     private ImageButton playButton;
     private ImageButton deleteButton;
     //storing the output file
@@ -54,7 +55,7 @@ public class ListItem implements Item {
     private OnClickDeleteButtonListener listener;
 
 
-    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity, OnClickDeleteButtonListener onClickDeleteButtonListener) {
+    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity, OnClickDeleteButtonListener onClickDeleteButtonListener, String frag) {
         this.description = description;
         this.timeCreated = timeCreated;
         this.username = username;
@@ -62,6 +63,7 @@ public class ListItem implements Item {
         this.context = context;
         this.activity = activity;
         this.listener = onClickDeleteButtonListener;
+        this.frag = frag;
 
         // Record to the external cache directory for visibility
         OUTPUT_FILE = activity.getExternalCacheDir().getAbsolutePath();
@@ -105,16 +107,20 @@ public class ListItem implements Item {
         });
 
         deleteButton = view.findViewById(R.id.deleteButton);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("CLIKCKEJD", "" + postID);
-                // delete
+        if (frag.contains("profile")){
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("CLIKCKEJD", "" + postID);
+                    // delete
 
-                deletePost();
+                    deletePost();
 
-            }
-        });
+                }
+            });
+        } else{
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
 
         descriptionText.setText(description);
         usernameText.setText("By: " + username);
@@ -139,8 +145,8 @@ public class ListItem implements Item {
 
                 Log.i("CLIKCKEJD", "yes");
 
-                if(listener != null)
-                    listener.onBtnClick(postID);
+
+                listener.onBtnClick(postID);
 
             }});
         adb.show();
@@ -166,7 +172,7 @@ public class ListItem implements Item {
 
         TransferObserver downloadObserver =
                 transferUtility.download(
-                        "s3Folder/" + postID + ".m4a",
+                        "iostest.m4a",
                         new File(OUTPUT_FILE));
 
         // Attach a listener to the observer to get state update and progress notifications

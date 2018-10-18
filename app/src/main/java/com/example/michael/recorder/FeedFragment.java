@@ -155,11 +155,8 @@ public class FeedFragment extends Fragment {
 
             // Do things like hide the progress bar or update ListView
             for(int i=0; i < postsArray.length(); i++){
-                try{
-                    JSONArray jsonArray = postsArray.getJSONArray(i);
-                    for(int x=0; x<jsonArray.length(); x++) {
                         try {
-                            currentObj = jsonArray.getJSONObject(x);
+                            currentObj = postsArray.getJSONObject(i);
                         } catch (JSONException e) {
                             Log.e("Error", e.getMessage());
                         }
@@ -170,17 +167,12 @@ public class FeedFragment extends Fragment {
                                             currentObj.getString("description"),
                                             currentObj.getInt("time_created"),
                                             currentObj.getInt("post_i_d"),
-                                            currentObj.getString("username"), getContext(), getActivity(), listener)
+                                            currentObj.getString("username"), getContext(), getActivity(), listener, "feed")
                             );
                         } catch (JSONException e){
                             Log.e("Error", e.getMessage());
                         }
 
-                    }
-
-                } catch (JSONException e) {
-                    Log.e("error", e.getMessage());
-                }
             }
 
             // make newest exercise the first item in listview
