@@ -11,10 +11,14 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.R.*;
 
@@ -37,6 +41,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+
 public class ListItem implements Item {
 
     private static final String TAG = "ListItem";
@@ -53,6 +59,7 @@ public class ListItem implements Item {
     private String OUTPUT_FILE;
     private MediaPlayer mediaPlayer;
     private OnClickDeleteButtonListener listener;
+    private PopupWindow popupWindow;
 
 
     public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity, OnClickDeleteButtonListener onClickDeleteButtonListener, String frag) {
@@ -98,11 +105,11 @@ public class ListItem implements Item {
 
                 Log.i("POST ID", postID + " ");
 
-                playButton.setImageResource(R.drawable.elipses);
-
                 downloadWithTransferUtility();
 
-                playButton.setImageResource(R.drawable.check);
+                // show the popup
+                showPopup(view, "Playing " + description + " by " + username);
+
             }
         });
 
@@ -172,7 +179,7 @@ public class ListItem implements Item {
 
         TransferObserver downloadObserver =
                 transferUtility.download(
-                        "iostest.m4a",
+                        postID + ".m4a",
                         new File(OUTPUT_FILE));
 
         // Attach a listener to the observer to get state update and progress notifications
@@ -244,8 +251,41 @@ public class ListItem implements Item {
             public void run() {
                 // do work on UI
                 Log.i("MediaPlayer: ", "done playing post");
-                playButton.setImageResource(R.drawable.check);
+                dismissPopup();
             }
         });
+    }
+
+    private void showPopup(View view, String title){
+        // inflate the layout of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                activity.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_playback, null);
+
+        TextView textView = popupView.findViewById(R.id.desc);
+        textView.setText(title);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        // show the popup window
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                mediaPlayer.stop();
+                return true;
+            }
+        });
+    }
+
+    private void dismissPopup(){
+        popupWindow.dismiss();
     }
 }

@@ -499,7 +499,7 @@ public class RecordFragment extends Fragment {
 
         TransferObserver uploadObserver =
                 transferUtility.upload(
-                        "s3Folder/" + postID + ".m4a",
+                        postID + ".m4a",
                         outFile);
 
         // Attach a listener to the observer to get state update and progress notifications
