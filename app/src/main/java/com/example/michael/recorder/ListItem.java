@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioManager;
 import android.media.Image;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.ContactsContract;
@@ -34,6 +36,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.S3DataSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +58,8 @@ public class ListItem implements Item {
     private final Context context;
     private final Activity activity;
     private final String frag;
+    private View viewForDisplayingPopup;
+    private int lengthOfFile;
     private ImageButton playButton;
     private ImageButton deleteButton;
     //storing the output file
@@ -77,6 +82,7 @@ public class ListItem implements Item {
         // Record to the external cache directory for visibility
         OUTPUT_FILE = activity.getExternalCacheDir().getAbsolutePath();
         OUTPUT_FILE += "/recorder.m4a";
+
 
     }
 
@@ -105,12 +111,12 @@ public class ListItem implements Item {
             public void onClick(View view) {
                 // get postID from s3 and play it
 
+                // set public view to be accessed after download
+                viewForDisplayingPopup = view;
+
                 Log.i("POST ID", postID + " ");
 
                 downloadWithTransferUtility();
-
-                // show the popup
-                showPopup(view, "Playing " + description + " by " + username);
 
             }
         });
@@ -242,8 +248,15 @@ public class ListItem implements Item {
             mediaPlayer = new MediaPlayer();
             //Have to add a throw declaration
             mediaPlayer.setDataSource(OUTPUT_FILE);
+
             try {
                 mediaPlayer.prepare();
+                lengthOfFile = mediaPlayer.getDuration() / 1000;
+                Log.i("legnth: ", lengthOfFile + "");
+
+                // show the popup
+                showPopup(viewForDisplayingPopup, "Playing " + description + " by " + username + " (" + lengthOfFile + "s long)");
+
                 mediaPlayer.start();
             } catch (IOException e) {
                 Log.e("ListItemTagLog", "prepare() failed");
