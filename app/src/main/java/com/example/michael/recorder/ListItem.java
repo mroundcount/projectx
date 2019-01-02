@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.media.AudioManager;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.R.*;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobile.client.AWSMobileClient;
@@ -226,22 +228,34 @@ public class ListItem implements Item {
 
     private void playRecording() throws IOException {
         //make sure no media player is  that is already running
-        mediaPlayer = new MediaPlayer();
-        //Have to add a throw declaration
-        mediaPlayer.setDataSource(OUTPUT_FILE);
-        try {
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            Log.e("ListItemTagLog", "prepare() failed");
-        }
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                updateUI();
+        AudioManager manager = (AudioManager)activity.getSystemService(Context.AUDIO_SERVICE);
+
+        if(manager.isMusicActive())
+        {
+            // don't play new audio, create toast
+
+            Toast.makeText(activity, "Sorry, can't play two posts at once!", Toast.LENGTH_LONG).show();
+
+
+        } else{
+            mediaPlayer = new MediaPlayer();
+            //Have to add a throw declaration
+            mediaPlayer.setDataSource(OUTPUT_FILE);
+            try {
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            } catch (IOException e) {
+                Log.e("ListItemTagLog", "prepare() failed");
             }
-        });
+
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    updateUI();
+                }
+            });
+        }
     }
 
     private void updateUI() {
