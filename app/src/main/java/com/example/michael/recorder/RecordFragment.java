@@ -78,7 +78,7 @@ public class RecordFragment extends Fragment {
     // timer
     public CountDownTimer countDownTimer;
     public CountDownTimer resumedCountDownTimer;
-    private long millisInFuture = 60000;
+    private long millisInFuture = 120000;
     private long newMillisInFuture = 0;
 
     // shared preferences
@@ -329,11 +329,11 @@ public class RecordFragment extends Fragment {
         recorder.stop();
         recorder.release();
         recorder = null;
-        try {
-            playRecording();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            playRecording();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void pauseRecording() {
