@@ -378,7 +378,7 @@ public class RecordFragment extends Fragment {
         //3rd generation partnership project
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         //Adaptive multiprate narrow bans, we can use Y Band or AA for later version
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recorder.setOutputFile(OUTPUT_FILE);
         //Add exception to throwback.
         try {
