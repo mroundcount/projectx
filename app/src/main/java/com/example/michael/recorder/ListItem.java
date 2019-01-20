@@ -110,6 +110,7 @@ public class ListItem implements Item {
             @Override
             public void onClick(View view) {
                 // get postID from s3 and play it
+                Toast.makeText(activity, "Loading post", Toast.LENGTH_SHORT).show();
 
                 // set public view to be accessed after download
                 viewForDisplayingPopup = view;

@@ -11,11 +11,11 @@
 
 
     <!-- Color scheme -->
-    <color name="colorPrimary">#4F6D7A</color>
-    <color name="colorPrimaryLight">#56A3A6</color>
-    <color name="colorPrimaryDark">#084C61</color>
-    <color name="colorAccent">#DB504A</color>
-    <color name="colorAccentDark">#E3B505</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryLight">#b3b3b3</color>
+    <color name="colorPrimaryDark">#3c3c3c</color>
+    <color name="colorAccent">#A364DF</color>
+    <color name="colorAccentDark">#C500BA</color>
 
     <!--
     Changes:
