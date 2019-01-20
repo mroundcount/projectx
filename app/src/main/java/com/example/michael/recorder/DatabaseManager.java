@@ -16,9 +16,9 @@ public class DatabaseManager {
 
     // reusable website base url
     // local host for testing
-    private String website_url = "http://127.0.0.1:8081/";
+//    private String website_url = "http://127.0.0.1:8081/";
     // live for aws
-//    private String website_url = "http://totem-env.qqkpcqqjfi.us-east-1.elasticbeanstalk.com/";
+    private String website_url = "http://totem-env.qqkpcqqjfi.us-east-1.elasticbeanstalk.com/";
 
     private static final String TAG = "DatabaseManager";
 
