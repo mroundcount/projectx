@@ -55,6 +55,10 @@ public class ProfileFragment extends Fragment {
     private JSONObject currentObj;
     private List<Item> items = new ArrayList<Item>();
     private OnClickDeleteButtonListener listener;
+    private OnLikeButtonListener likeListener;
+    private ArrayList likedPosts = new ArrayList();
+    private JSONArray likedPostsJSON;
+    private boolean isPostLiked = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,14 @@ public class ProfileFragment extends Fragment {
             }
         };
 
+        likeListener = new OnLikeButtonListener() {
+            @Override
+            public void onBtnClick(int position) {
+                Log.i("liked my own post lol", position + "");
+                likePost(position);
+            }
+        };
+
     }
 
     @Override
@@ -120,8 +132,7 @@ public class ProfileFragment extends Fragment {
         listView = myFragmentView.findViewById(R.id.postsList);
 
         getPosts();
-
-
+        getLikesForUser();
 
         return myFragmentView;
     }
@@ -140,6 +151,23 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    public void likePost(int postID){
+        JSONObject postJSON = new JSONObject();
+
+        try{
+            postJSON.put("postID",postID);
+            Log.i("Json to post", postJSON.toString());
+        } catch (JSONException e){
+            // error
+        }
+
+        try {
+            databaseManager.likePost(jwt, postJSON);
+        } catch (IOException e){
+
+        }
+
+    }
 
     private class MyTask extends AsyncTask<Void, Void, String> {
 
@@ -180,12 +208,26 @@ public class ProfileFragment extends Fragment {
                 Log.i("Current obj", currentObj.toString());
 
                 try {
+
+                    if(likedPosts.contains(currentObj.getInt("post_i_d"))){
+                        isPostLiked = true;
+                    } else{
+                        isPostLiked = false;
+                    }
+
                     items.add(
                             new ListItem(
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity(), listener, "profile")
+                                    currentObj.getString("username"),
+                                    currentObj.getInt("likes"),
+                                    getContext(),
+                                    getActivity(),
+                                    listener,
+                                    "profile",
+                                    likeListener,
+                                    isPostLiked)
 
                     );
                 } catch (JSONException e){
@@ -237,6 +279,31 @@ public class ProfileFragment extends Fragment {
         super.onDetach();
     }
 
+    public void getLikesForUser(){
+        Log.i("getting likes", "gjlakdj");
+
+        JSONObject likeObj;
+        try {
+            try {
+                likedPostsJSON = new JSONArray(databaseManager.getLikesForUser(jwt));
+                for(int i=0; i < likedPostsJSON.length(); i++) {
+                    try {
+                        likedPosts.add(likedPostsJSON.getJSONObject(i).getInt("post_i_d"));
+                    } catch (JSONException e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                }
+            } catch (JSONException e){
+                Log.e("Error", e.getMessage());
+            }
+        } catch (IOException e){ }
+
+
+
+
+        Log.i("array to string:", likedPosts.toString());
+        sharedPreferences.edit().putString("likedPosts", likedPosts.toString()).apply();
+    }
 
 
 }

@@ -16,9 +16,9 @@ public class DatabaseManager {
 
     // reusable website base url
     // local host for testing
-//    private String website_url = "http://127.0.0.1:8081/";
+    private String website_url = "http://127.0.0.1:8081/";
     // live for aws
-    private String website_url = "http://totem-env.qqkpcqqjfi.us-east-1.elasticbeanstalk.com/";
+//    private String website_url = "http://totem-env.qqkpcqqjfi.us-east-1.elasticbeanstalk.com/";
 
     private static final String TAG = "DatabaseManager";
 
@@ -82,10 +82,27 @@ public class DatabaseManager {
 
         return response;
     }
+
+    public String likePost(String jwt, JSONObject data) throws IOException{
+
+        HttpRequest httpRequest = new HttpRequest(website_url);
+        String response = httpRequest.dataPost("api/like", jwt, data);
+
+        return response;
+    }
+
     public String getPostsForUser(String jwt) throws IOException{
 
         HttpRequest httpRequest = new HttpRequest(website_url);
         String response = httpRequest.getData("api/postsForUser", jwt);
+
+        return response;
+    }
+
+    public String getLikesForUser(String jwt) throws IOException{
+
+        HttpRequest httpRequest = new HttpRequest(website_url);
+        String response = httpRequest.getData("api/getLikesForUser", jwt);
 
         return response;
     }

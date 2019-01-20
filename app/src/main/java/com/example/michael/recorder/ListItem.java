@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.Image;
 import android.media.MediaMetadataRetriever;
@@ -58,18 +59,24 @@ public class ListItem implements Item {
     private final Context context;
     private final Activity activity;
     private final String frag;
+    private int likes;
     private View viewForDisplayingPopup;
     private int lengthOfFile;
     private ImageButton playButton;
     private ImageButton deleteButton;
+    private ImageButton likeButton;
     //storing the output file
     private String OUTPUT_FILE;
     private MediaPlayer mediaPlayer;
     private OnClickDeleteButtonListener listener;
+    private OnLikeButtonListener likeListener;
     private PopupWindow popupWindow;
+    private boolean likedPost = false;
+    private SharedPreferences sharedPreferences;
 
-
-    public ListItem(String description, int timeCreated, int postID, String username, Context context, Activity activity, OnClickDeleteButtonListener onClickDeleteButtonListener, String frag) {
+    public ListItem(String description, int timeCreated, int postID, String username, int numLikes,
+                    Context context, Activity activity, OnClickDeleteButtonListener
+                            onClickDeleteButtonListener, String frag, OnLikeButtonListener likeButtonListener, boolean liked) {
         this.description = description;
         this.timeCreated = timeCreated;
         this.username = username;
@@ -78,11 +85,13 @@ public class ListItem implements Item {
         this.activity = activity;
         this.listener = onClickDeleteButtonListener;
         this.frag = frag;
+        this.likeListener = likeButtonListener;
+        this.likedPost = liked;
+        this.likes = numLikes;
 
         // Record to the external cache directory for visibility
         OUTPUT_FILE = activity.getExternalCacheDir().getAbsolutePath();
         OUTPUT_FILE += "/recorder.m4a";
-
 
     }
 
@@ -102,6 +111,7 @@ public class ListItem implements Item {
 
         TextView descriptionText = view.findViewById(R.id.descriptionText);
         TextView timeCreatedText = view.findViewById(R.id.timeCreatedText);
+        final TextView likesText = view.findViewById(R.id.likesText);
         playButton = view.findViewById(R.id.playButton);
         playButton.setImageResource(R.drawable.play);
         TextView usernameText = view.findViewById(R.id.usernameOfPoster);
@@ -138,8 +148,29 @@ public class ListItem implements Item {
             deleteButton.setVisibility(View.INVISIBLE);
         }
 
+        likeButton = view.findViewById(R.id.likeButton);
+
+        if(likedPost){
+            likeButton.setEnabled(false);
+            likeButton.setImageResource(R.drawable.like_button_red);
+        } else{
+            likeButton.setImageResource(R.drawable.like_button);
+            likeButton.setEnabled(true);
+            likeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    likeButton.setImageResource(R.drawable.like_button_red);
+                    likes = likes + 1;
+                    likesText.setText("" + likes);
+                    Log.i("LIKED THIS POST: ", "" + postID);
+                    likePost();
+                }
+            });
+        }
+
         descriptionText.setText(description);
-        usernameText.setText("By: " + username);
+        usernameText.setText(username);
+        likesText.setText("" + likes);
         try {
             timeCreatedText.setText(getDates(timeCreated));
         } catch (ParseException e){
@@ -161,11 +192,14 @@ public class ListItem implements Item {
 
                 Log.i("CLIKCKEJD", "yes");
 
-
                 listener.onBtnClick(postID);
 
             }});
         adb.show();
+    }
+
+    private void likePost(){
+        likeListener.onBtnClick(postID);
     }
     /*
     Gets the date of the workout and formats it

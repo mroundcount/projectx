@@ -59,6 +59,10 @@ public class ExploreProfileFragment extends Fragment {
     private Integer id;
     private Integer loggedInUserID;
     private OnClickDeleteButtonListener listener;
+    private OnLikeButtonListener likeListener;
+    private ArrayList likedPosts = new ArrayList();
+    private JSONArray likedPostsJSON;
+    private boolean isPostLiked = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,12 @@ public class ExploreProfileFragment extends Fragment {
             @Override
             public void onBtnClick(int position) {
                 getPosts();
+            }
+        };
+        likeListener = new OnLikeButtonListener() {
+            @Override
+            public void onBtnClick(int position) {
+
             }
         };
     }
@@ -126,6 +136,7 @@ public class ExploreProfileFragment extends Fragment {
         profileName.setText(username + "'s profile");
 
         getPosts();
+        getLikesForUser();
 
         return myFragmentView;
     }
@@ -182,12 +193,26 @@ public class ExploreProfileFragment extends Fragment {
                 Log.i("Current obj", currentObj.toString());
 
                 try {
+
+                    if(likedPosts.contains(currentObj.getInt("post_i_d"))){
+                        isPostLiked = true;
+                    } else{
+                        isPostLiked = false;
+                    }
+
                     items.add(
                             new ListItem(
                                     currentObj.getString("description"),
                                     currentObj.getInt("time_created"),
                                     currentObj.getInt("post_i_d"),
-                                    currentObj.getString("username"), getContext(), getActivity(), listener, "explore")
+                                    currentObj.getString("username"),
+                                    currentObj.getInt("likes"),
+                                    getContext(),
+                                    getActivity(),
+                                    listener,
+                                    "explore",
+                                    likeListener,
+                                    isPostLiked)
                     );
                 } catch (JSONException e){
                     Log.e("Error", e.getMessage());
@@ -265,6 +290,32 @@ public class ExploreProfileFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void getLikesForUser(){
+        Log.i("getting likes", "gjlakdj");
+
+        JSONObject likeObj;
+        try {
+            try {
+                likedPostsJSON = new JSONArray(databaseManager.getLikesForUser(jwt));
+                for(int i=0; i < likedPostsJSON.length(); i++) {
+                    try {
+                        likedPosts.add(likedPostsJSON.getJSONObject(i).getInt("post_i_d"));
+                    } catch (JSONException e) {
+                        Log.e("Error", e.getMessage());
+                    }
+                }
+            } catch (JSONException e){
+                Log.e("Error", e.getMessage());
+            }
+        } catch (IOException e){ }
+
+
+
+
+        Log.i("array to string:", likedPosts.toString());
+        sharedPreferences.edit().putString("likedPosts", likedPosts.toString()).apply();
     }
 
 }
