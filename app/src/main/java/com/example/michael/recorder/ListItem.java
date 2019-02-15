@@ -163,6 +163,7 @@ public class ListItem implements Item {
                     likes = likes + 1;
                     likesText.setText("" + likes);
                     Log.i("LIKED THIS POST: ", "" + postID);
+                    likeButton.setEnabled(false);
                     likePost();
                 }
             });

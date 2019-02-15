@@ -74,6 +74,7 @@ public class RecordFragment extends Fragment {
     // track if we are currently recording
     boolean currentlyRecording = false;
     boolean recordingPaused = false;
+    private int duration = 0;
 
     // timer
     public CountDownTimer countDownTimer;
@@ -418,6 +419,7 @@ public class RecordFragment extends Fragment {
             @Override
             public void onTick(long millisUntilFinished) {
                 long seconds = (millisInFuture - millisUntilFinished) / 1000;
+                duration = (int) seconds;
                 int hours = (int) seconds / 3600;
                 int remainder = (int) seconds - hours * 3600;
                 int mins = remainder / 60;
@@ -551,6 +553,7 @@ public class RecordFragment extends Fragment {
         a.put("description",description);
         a.put("timeCreated", Long.toString(Calendar.getInstance().getTimeInMillis()/1000));
         a.put("likes",0);
+        a.put("duration", duration);
 
         jsonArray.put(a);
         postJSON.put("Post",jsonArray);
